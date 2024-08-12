@@ -4,7 +4,18 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const nocache = require('nocache');
 
+
+const logger = (req, res, next) => {
+  console.log('middleware');
+  // res.send("hellow")
+  next();
+  
+}
+
+
+
 const app = express();
+app.use(logger)
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -20,7 +31,7 @@ app.use(session({
   cookie: { maxAge: 60000 } // Session expires after 1 minute for testing purposes
 }));
 
-const predefinedUser = {
+let predefinedUser = {
   username: 'user123',
   password: 'pass123'
 };
@@ -65,7 +76,7 @@ app.post('/login', (req, res) => {
 // Route for the home page
 app.get('/home', (req, res) => {
   if (req.session.loggedIn) {
-    res.render('home');
+    res.render('home', { username: predefinedUser.username });
   } else {
     res.redirect('/login');
   }
@@ -82,6 +93,10 @@ app.post('/signout', (req, res) => {
   });
 });
 
+
+
+
+
 app.listen(3010, () => {
-  console.log('Server is running on http://localhost:3000');
+  console.log('Server is running on http://localhost:3010');
 });
